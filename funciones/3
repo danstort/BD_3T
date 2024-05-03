@@ -1,0 +1,39 @@
+Invocar a una función
+Como parámetros, también podemos utilizar los valores de las columnas de una tabla
+
+Por ejemplo, en el caso de la función get_agentes_count(), la podremos invocar de la siguiente forma:
+
+select categoria, get_agentes_count(categoria, categoria)
+    from agentes
+group by categoria;
+
+categoria|get_agentes_count|
+---------+-----------------+
+        1|                6|
+        2|                3|
+        0|               30|
+Ejercicio
+Habiendo creado correctamente la función get_empleados_count(), ¿cómo mostrarías el número de empleados asociado a cada department_id?
+
+Ordena el resultado descendentemente por el número de empleados.
+
+Se espera obtener esta salida
+department_id|n_empleados|
+-------------+-----------+
+           50|         45|
+           80|         34|
+          100|          6|
+           30|          6|
+           60|          5|
+           90|          3|
+           20|          2|
+          110|          2|
+           10|          1|
+           70|          1|
+           40|          1|
+             |          0|
+
+
+
+
+             select department_id, get_empleados_count(department_id) as n_empleados from employees group by department_id order by n_empleados desc;
