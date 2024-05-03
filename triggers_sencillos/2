@@ -1,0 +1,46 @@
+13 Triggers - Restricción de eliminar
+Crea un disparador en la base de datos de HR que no permita eliminar ningún empleado que entrara en la empresa antes de 1995. En caso de que se intente eliminar un empleado previo a 1995, a través de su id, que salte un error.
+
+
+Con las siguientes entradas
+delete from employees where employee_id = 103;
+
+select * from employees order by employee_id limit 10;
+→
+Se espera obtener esta salida
+employee_id|first_name|last_name|email   |phone_number|hire_date              |job_id    |salary  |commission_pct|manager_id|department_id|
+-----------+----------+---------+--------+------------+-----------------------+----------+--------+--------------+----------+-------------+
+        100|Steven    |King     |SKING   |515.123.4567|1987-06-17 00:00:00.000|AD_PRES   |24000.00|              |          |           90|
+        101|Neena     |Kochhar  |NKOCHHAR|515.123.4568|1989-09-21 00:00:00.000|AD_VP     |17000.00|              |       100|           90|
+        102|Lex       |De Haan  |LDEHAAN |515.123.4569|1993-01-13 00:00:00.000|AD_VP     |17000.00|              |       100|           90|
+        103|Alexander |Hunold   |AHUNOLD |590.423.4567|1990-01-03 00:00:00.000|IT_PROG   | 9000.00|              |       102|           60|
+        104|Bruce     |Ernst    |BERNST  |590.423.4568|1991-05-21 00:00:00.000|IT_PROG   | 6000.00|              |       103|           60|
+        105|David     |Austin   |DAUSTIN |590.423.4569|1997-06-25 00:00:00.000|IT_PROG   | 4800.00|              |       103|           60|
+        106|Valli     |Pataballa|VPATABAL|590.423.4560|1998-02-05 00:00:00.000|IT_PROG   | 4800.00|              |       103|           60|
+        107|Diana     |Lorentz  |DLORENTZ|590.423.5567|1999-02-07 00:00:00.000|IT_PROG   | 4200.00|              |       103|           60|
+        108|Nancy     |Greenberg|NGREENBE|515.124.4569|1994-08-17 00:00:00.000|FI_MGR    |12000.00|              |       101|          100|
+        109|Daniel    |Faviet   |DFAVIET |515.124.4169|1994-08-16 00:00:00.0
+
+
+
+
+        create or replace function delete_empleado()
+returns trigger
+language plpgsql
+as $$
+begin
+	
+    if extract(year from old.hire_date) < 1995 then
+    RAISE exception 'No se puede eliminar' ;
+   end if;
+    
+   return new;
+end;
+$$;
+
+
+create trigger delete_empleado
+before delete 
+on job_history
+for each row
+execute function delete_empleado();
