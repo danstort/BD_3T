@@ -1,0 +1,49 @@
+05 Funciones - Condicionales
+Ejercicio
+Como resultado del ejercicio 3, la fila correspondiente al department_id NULL aparece con NULL empleados.
+
+Modifica la función get_empleados_count() para que, en el caso de que se envíe NULL como parámetro, que la función devuelva también NULL en lugar de 0
+
+
+Con las siguientes entradas
+SELECT department_id, get_empleados_count(department_id) as n_empleados FROM EMPLOYEES E
+GROUP BY department_id
+ORDER BY n_empleados DESC;
+→
+Se espera obtener esta salida
+department_id|n_empleados|
+-------------+-----------+
+             |           |
+           50|         45|
+           80|         34|
+          100|          6|
+           30|          6|
+           60|          5|
+           90|          3|
+          110|          2|
+           20|          2|
+           10|          1|
+           40|          1|
+           70|          1|
+
+
+
+
+           create or replace
+function get_empleados_count(id numeric)
+returns int
+language plpgsql
+as
+$function$
+declare
+    count_department integer;
+begin 
+	select nullif(count(*), 0) into count_department from
+	employees
+where
+	department_id = id;
+   return count_department;
+
+end;
+
+$function$
