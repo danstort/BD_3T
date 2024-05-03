@@ -1,1 +1,24 @@
-prueba
+Invocar a una función
+PostgreSQL le proporciona tres formas de llamar a una función definida por el usuario. No obstante, aquí se explicará la notación posicional, en la que se deben especificar los argumentos en el mismo orden en el que se establecieron los parámetros.
+
+En el caso de la función get_agentes_count(), la invocaremos de la siguiente forma:
+
+select get_agentes_count(1, 2);
+ get_agentes_count 
+-------------------
+                 9
+(1 fila)
+Ejercicio
+Habiendo creado correctamente la función get_empleados_count(), ¿cómo mostrarías la cantidad de empleados que tienen asociado el department_id 30 y 90?
+
+
+Se espera obtener esta salida
+dep_30|dep_90|
+------+------+
+     6|     3|
+
+
+
+
+
+     select get_empleados_count(30) as dep_30, get_empleados_count(90) as dep_90;
