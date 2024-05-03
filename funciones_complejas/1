@@ -1,0 +1,66 @@
+06 Funciones - Numero de subordinados
+Crea la función get_subordinados_departamento(), que recibe, como parámetro, un identificador de departamento y devuelve el número de subordinados que hay en ese departamento. Es decir:
+
+Si el departamento no tiene ningún empleado asociado, la función devolverá el texto 'Sin empleados'.
+Si el departamento únicamente tiene un empleado asociado, ese tendrá que ser el jefe, por lo que la función devolverá el texto 'Solo el jefe'.
+Si el departamento tiene más de un empleado asociado, la función devolvera la cantidad de empleados asociados a la que se le descontará el jefe.
+
+
+Con las siguientes entradas
+select department_name,  get_subordinados_departamento(department_id)
+from departments
+order by department_name;
+→
+Se espera obtener esta salida
+department_name     |get_subordinados_departamento|
+--------------------+-----------------------------+
+Accounting          |1                            |
+Administration      |Solo el jefe                 |
+Benefits            |Sin empleados                |
+Construction        |Sin empleados                |
+Contracting         |Sin empleados                |
+Control And Credit  |Sin empleados                |
+Corporate Tax       |Sin empleados                |
+Executive           |2                            |
+Finance             |5                            |
+Government Sales    |Sin empleados                |
+Human Resources     |Solo el jefe                 |
+IT                  |4                            |
+IT Helpdesk         |Sin empleados                |
+IT Support          |Sin empleados                |
+Manufacturing       |Sin empleados                |
+Marketing           |1                            |
+NOC                 |Sin empleados                |
+Operations          |Sin empleados                |
+Payroll             |Sin empleados                |
+Public Relations    |Solo el jefe                 |
+Purchasing          |5                            |
+Recruiting          |Sin empleados                |
+Retail Sales        |Sin empleados                |
+Sales               |33                           |
+Shareholder Services|Sin empleados                |
+Shipping            |44                           |
+Treasury            |Sin empleados                |
+
+
+
+create or replace
+function get_subordinados_departamento(dep numeric, out subor char)
+language plpgsql
+as
+$function$
+declare 
+sub int;
+begin 
+	select count(e.employee_id) into sub from employees e right join  departments d on(e.department_id=d.department_id) where d.department_id = dep group by d.department_name  ;
+
+if sub = 0 then
+subor:='Sin empleados';
+elsif sub = 1 then
+subor:='Solo el jefe';
+else
+subor=sub-1;
+end if;
+end;
+
+$function$
