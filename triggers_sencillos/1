@@ -1,0 +1,40 @@
+12 Triggers - Añadir dominio a email
+Crea un disparador que haga que, en la base de datos de HR, cada vez que se agregue un nuevo empleado, le añada el dominio @gmail.es al email de este.
+
+
+Con las siguientes entradas
+insert into employees(employee_id, first_name, last_name, email, phone_number, hire_date, job_id, salary, manager_id, department_id)
+values (1, 'Andrew', 'Nightingale', 'cats.andy', '635960194', '2024-01-01', 'IT_PROG', 18000, 100, 90);
+
+select * from employees where employee_id = 1;
+→
+Se espera obtener esta salida
+employee_id|first_name|last_name  |email             |phone_number|hire_date              |job_id |salary  |commission_pct|manager_id|department_id|
+-----------+----------+-----------+------------------+------------+-----------------------+-------+--------+--------------+----------+-------------+
+          1|Andrew    |Nightingale|cats.andy@gmail.es|635960194   |2024-
+
+
+
+
+
+          create or replace function dominio_email_empleado()
+returns trigger
+language plpgsql
+as $$
+begin
+	
+    if new.email not like '%@gmail.es' then
+	new.email := new.email || '@gmail.es';
+     end if;
+     return new;
+end;
+$$;
+
+create trigger insercion_empleado
+before insert 
+on employees
+for each row
+execute function dominio_email_empleado();
+
+
+
