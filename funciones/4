@@ -1,0 +1,37 @@
+04 Funciones - Antiguedad
+Ejercicio
+Utilizando la base de datos HR, crea la función antiguedada la que le enviamos un nombre y unos apellidos y nos devuelve los años de antigüedad que ese empleado lleva en la empresa
+
+Para resolver esa función, deberás utilizar las funciones EXTRACT() y AGE() cuyas referencias puedes encontrar aquí
+
+Con las siguientes entradas
+SELECT first_name, last_name, antiguedad(first_name, last_name)
+from EMPLOYEES E
+where DEPARTMENT_ID = 60
+order by LAST_NAME;
+→
+Se espera obtener esta salida
+first_name|last_name|antiguedad|
+----------+---------+----------+
+David     |Austin   |        26|
+Bruce     |Ernst    |        32|
+Alexander |Hunold   |        34|
+Diana     |Lorentz  |        25|
+Valli     |Pataballa|        26|
+
+
+
+create or replace function antiguedad(nombre char, apellido char)
+returns int
+language plpgsql
+as
+$function$
+declare
+    ant integer;
+begin
+    select extract(year from age(current_date, hire_date))
+    into ant from employees e
+    where first_name=nombre and last_name=apellido;
+    return ant;
+end;
+$function$
