@@ -1,0 +1,14 @@
+create or replace function get_empleados_count(dep int)
+returns int
+language plpgsql
+as
+$function$
+declare
+    cont integer;
+begin
+    select count(*)
+    into cont from employees e
+    where department_id = dep;
+    return cont;
+end;
+$function$
