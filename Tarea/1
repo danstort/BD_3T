@@ -1,0 +1,54 @@
+Cese pendiente por cada inserción.
+Por cada nuevo registro que se inserte en la tabla ALTOS_CARGOS, necesitamos realizar dos acciones de manera automática:
+
+Si el atributo FECHA_NOMBRAMIENTO no tiene ningún valor (solo si no se le ha asignado ningún valor), se le va a asignar, automáticamente el valor de CURRENT_DATE. No se puede modificar la estructura de la tabla ALTOS_CARGOS.
+Almacenaremos también la información correspondiente al alto cargo que se está insertando en una tabla auxiliar CESES_PENDIENTES, que utilizaremos en algún ejercicio posterior. Los datos a almacenar en dicha tabla serán los correspondientes al ID, FECHA_NOMBRAMIENTO, CARGO, CONSEJERIA del alto cargo que se está insertando.
+
+Con las siguientes entradas
+INSERT INTO ALTOS_CARGOS VALUES (
+    1001, 'Perico Pérez', NULL, NULL, 1, 42, 'Secretaria General', 2, 'H'
+);
+INSERT INTO ALTOS_CARGOS VALUES (
+    1002, 'María Jiménez', NULL, to_date('23/07/21','DD/MM/YY'), 1, 42, 'Consejero', 2, 'H'
+);
+
+SELECT * FROM ALTOS_CARGOS JOIN CESES_PENDIENTES ON (CESES_PENDIENTES.ID_ALTO_CARGO = ALTOS_CARGOS.ID)
+WHERE ID > 1000 ORDER BY ID;
+→
+Se espera obtener esta salida
+id  |nombre       |fecha_cese|fecha_nombramiento|organismo|consejeria|cargo             |rango|sexo|id_alto_cargo|consejeria|fecha_nombramiento|cargo             |
+----+-------------+----------+------------------+---------+----------+------------------+-----+----+-------------+----------+------------------+------------------+
+1001|Perico Pérez |          |        2022-12-16|        1|        42|Secretaria General|    2|H   |         1001|        42|        2022-12-16|Secretaria General|
+1002|María Jiménez|          |        2021-07-23|        1|        42|Conse
+
+
+
+
+
+
+
+create function incargo()
+returns trigger
+language plpgsql
+as
+$$
+declare
+ contador_agentes integer;
+begin
+ 
+if new.FECHA_NOMBRAMIENTO is null then
+	
+	new.FECHA_NOMBRAMIENTO =Current_date;
+	
+ end if;
+
+insert into ceses_pendientes values (new.id, new.consejeria, new.FECHA_NOMBRAMIENTO, new.cargo);
+	return new;
+end;
+$$;
+
+
+CREATE TRIGGER newcargo 
+BEFORE INSERT OR UPDATE ON altos_cargos
+FOR EACH ROW 
+EXECUTE FUNCTION incargo();
