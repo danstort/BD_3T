@@ -1,0 +1,13 @@
+create function HA_SIDO_REMPLAZADO(idca numeric)
+returns int
+language plpgsql
+as
+$$
+declare
+reg int;
+begin
+ 
+	select count(*) into reg from ceses_pendientes cp where age(current_date, fecha_nombramiento) < (select age(current_date, fecha_nombramiento) from altos_cargos ac where id=idca) and consejeria = (select consejeria  from altos_cargos ac where id = idca) and cargo = (select cargo from altos_cargos ac where id = idca);
+	return reg;
+end;
+$$;
